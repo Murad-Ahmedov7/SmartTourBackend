@@ -1,0 +1,6 @@
+@SmartTour.Api_HostAddress = http://localhost:5182
+
+GET {{SmartTour.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
