@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartTour.Api", "SmartTour.Api\SmartTour.Api.csproj", "{344AC984-1093-458B-A13B-79CC7C8D7D30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartTour.Api", "SmartTour.Api\SmartTour.Api.csproj", "{344AC984-1093-458B-A13B-79CC7C8D7D30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartTour.Business", "SmartTour.Business\SmartTour.Business.csproj", "{4834051F-1672-4129-BD67-11570BB6ADB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartTour.Business", "SmartTour.Business\SmartTour.Business.csproj", "{4834051F-1672-4129-BD67-11570BB6ADB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartTour.DataAccess", "SmartTour.DataAccess\SmartTour.DataAccess.csproj", "{03F2B331-8496-4EB5-BCE2-1B39CB5B31F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartTour.DataAccess", "SmartTour.DataAccess\SmartTour.DataAccess.csproj", "{03F2B331-8496-4EB5-BCE2-1B39CB5B31F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartTour.Entities", "SmartTour.Entities\SmartTour.Entities.csproj", "{A15A9C7F-E315-46F0-A71A-E54AFEC15ABB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartTour.Entities", "SmartTour.Entities\SmartTour.Entities.csproj", "{A15A9C7F-E315-46F0-A71A-E54AFEC15ABB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "g", "g", "{CB568DFC-7E5C-4E0A-BDFE-37C6E75856C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
