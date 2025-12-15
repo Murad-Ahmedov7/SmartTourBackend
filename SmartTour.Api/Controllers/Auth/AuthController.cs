@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartTour.Business.DTOs.Auth;
+using SmartTour.Business.Enums;
 using SmartTour.Business.Services.Auth.Abstract;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -28,21 +29,27 @@ namespace SmartTour.Api.Controllers.Auth
 
 
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
-        {
-            var result = await _authService.LoginAsync(dto);
-
-            if (result == null)
-                return Unauthorized("Invalid email or password");
-
-            return Ok(new
+            [HttpPost("login")]
+            public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
             {
-                token = result.Value.token,
-                user_id = result.Value.userId,
-                expires_in = result.Value.expiresIn
-            });
+                var result = await _authService.LoginAsync(dto);
+
+            if (result.status == LoginStatus.Success)
+                return Ok(new { result.token, result.userId, result.expiresIn });
+
+            if (result.status == LoginStatus.Locked)
+                return StatusCode(429,
+                    new { message = "Çox sayda uğursuz giriş cəhdi aşkarlandı. Zəhmət olmasa, bir müddət sonra yenidən cəhd edin." });
+
+            if (result.status == LoginStatus.InvalidCredentials)
+                return Unauthorized(new { message = "Email və ya şifrə yanlışdır." });
+
+            // FALLBACK — bu artıq backend səhvidir
+            return StatusCode(500, new { message = "Gözlənilməz xəta baş verdi." });
+
         }
+
+     
 
     }
 }

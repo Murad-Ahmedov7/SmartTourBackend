@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SmartTour.Business.DTOs.Auth;
+using SmartTour.Business.Enums;
 using SmartTour.Business.Services.Auth.Abstract;
 using SmartTour.DataAccess.Repositories.Auth.Abstract;
 using SmartTour.Entities.Users;
@@ -46,21 +47,49 @@ namespace SmartTour.Business.Services.Auth.Concrete
         }
 
         // ================= LOGIN =================
-        public async Task<(string token, Guid userId, int expiresIn)?> LoginAsync(LoginRequestDto dto)
+        public async Task<(LoginStatus status, string? token, Guid? userId, int? expiresIn)>
+            LoginAsync(LoginRequestDto dto)
         {
             var user = await _userRepository.GetByEmailAsync(dto.Email);
             if (user == null)
-                return null;
+                return (LoginStatus.InvalidCredentials, null, null, null);
+
+            // Lockout bitibsə → təmizlə
+            if (user.LockoutUntil.HasValue && user.LockoutUntil.Value <= DateTime.UtcNow)
+            {
+                user.LockoutUntil = null;
+                user.FailedLoginAttempts = 0;
+                await _userRepository.SaveChangesAsync();
+            }
+
+            // Hələ də blokdadırsa
+            if (user.LockoutUntil.HasValue && user.LockoutUntil.Value > DateTime.UtcNow)
+                return (LoginStatus.Locked, null, null, null);
 
             var passwordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
             if (!passwordValid)
-                return null;
+            {
+                user.FailedLoginAttempts++;
+
+                if (user.FailedLoginAttempts >= 5 && user.LockoutUntil == null)
+                    user.LockoutUntil = DateTime.UtcNow.AddMinutes(15);
+
+                await _userRepository.SaveChangesAsync();
+                return (LoginStatus.InvalidCredentials, null, null, null);
+            }
+
+            // Uğurlu login
+            user.FailedLoginAttempts = 0;
+            user.LockoutUntil = null;
+            user.LastLogin = DateTime.UtcNow;
+            await _userRepository.SaveChangesAsync();
 
             var token = GenerateJwtToken(user);
             var expireMinutes = int.Parse(_configuration["Jwt:ExpireMinutes"]!);
 
-            return (token, user.Id, expireMinutes * 60);
+            return (LoginStatus.Success, token, user.Id, expireMinutes * 60);
         }
+
 
         // ================= JWT GENERATION =================
         private string GenerateJwtToken(User user)
