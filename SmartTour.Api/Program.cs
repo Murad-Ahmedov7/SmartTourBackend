@@ -31,6 +31,8 @@ builder.Services.AddDbContext<AppDataContext>(options =>
 
 builder.Services.AddScoped<IUserRepository,UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IGoogleService, GoogleAuthService>();
+
 
 
 var jwt = builder.Configuration.GetSection("Jwt");

@@ -2,6 +2,7 @@
 using SmartTour.Business.DTOs.Auth;
 using SmartTour.Business.Enums;
 using SmartTour.Business.Services.Auth.Abstract;
+using SmartTour.Business.Services.Auth.Concrete;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,10 +13,12 @@ namespace SmartTour.Api.Controllers.Auth
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IGoogleService _googleAuthService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IGoogleService googleAuthService)
         {
             _authService = authService;
+            _googleAuthService = googleAuthService;
         }
 
         [HttpPost("register")]
@@ -23,7 +26,7 @@ namespace SmartTour.Api.Controllers.Auth
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto dto)
         {
             await _authService.RegisterAsync(dto);
-            return Ok();
+            return Ok(dto);
 
         }
 
@@ -44,12 +47,31 @@ namespace SmartTour.Api.Controllers.Auth
             if (result.status == LoginStatus.InvalidCredentials)
                 return Unauthorized(new { message = "Email və ya şifrə yanlışdır." });
 
-            // FALLBACK — bu artıq backend səhvidir
             return StatusCode(500, new { message = "Gözlənilməz xəta baş verdi." });
 
         }
 
-     
+
+        //#############################################
+        [HttpGet("google/callback")]
+        public async Task<IActionResult> GoogleCallBack(string code)
+        {
+            // 1️⃣ Google-dan user al
+            var googleUser = await _googleAuthService.GetUserAsync(code);
+
+            // 2️⃣ AuthService-ə ötür
+            var result = await _authService.GoogleLoginAsync(googleUser);
+
+            return Ok(new
+            {
+                result.token,
+                result.userId,
+                result.expiresIn
+            });
+        }
+
+
+
 
     }
 }
