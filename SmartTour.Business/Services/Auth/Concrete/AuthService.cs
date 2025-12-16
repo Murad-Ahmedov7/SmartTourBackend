@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SmartTour.Business.DTOs.Auth;
+using SmartTour.Business.DTOs.GogleDto;
 using SmartTour.Business.Enums;
 using SmartTour.Business.Services.Auth.Abstract;
 using SmartTour.DataAccess.Repositories.Auth.Abstract;
@@ -132,5 +133,46 @@ namespace SmartTour.Business.Services.Auth.Concrete
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        //#####################GOOGLE LOGIN ##############################
+
+        public async Task<(LoginStatus status, string? token, Guid? userId, int? expiresIn)>
+    GoogleLoginAsync(GoogleUserDto dto)
+        {
+            var user = await _userRepository.GetByEmailAsync(dto.Email);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    Email = dto.Email,
+                    FullName = dto.FullName,
+                    GoogleId = dto.GoogleId,
+                    AvatarUrl = dto.AvatarUrl,
+                    AuthProvider = AuthProvider.Google.ToString(),
+                    LastLogin = DateTime.UtcNow
+                };
+
+                await _userRepository.AddAsync(user);
+                await _userRepository.SaveChangesAsync();
+            }
+            else
+            {
+                if (user.AuthProvider == AuthProvider.Local.ToString())
+                {
+                    user.GoogleId = dto.GoogleId;
+                    user.AuthProvider = AuthProvider.Google.ToString();
+                }
+
+                user.LastLogin = DateTime.UtcNow;
+                await _userRepository.SaveChangesAsync();
+            }
+
+            var token = GenerateJwtToken(user);
+            var expireMinutes = int.Parse(_configuration["Jwt:ExpireMinutes"]!);
+
+            return (LoginStatus.Success, token, user.Id, expireMinutes * 60);
+        }
+
     }
 }

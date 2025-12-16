@@ -13,7 +13,7 @@ namespace SmartTour.Entities.Users
 
         public bool IsPhoneVerified { get; set; } = false;
 
-        public required string PasswordHash { get; set; }
+        public string? PasswordHash { get; set; }
 
         public int FailedLoginAttempts { get; set; }
 
@@ -22,6 +22,9 @@ namespace SmartTour.Entities.Users
         public DateTime CreatedAt { get; private set; }=DateTime.UtcNow;
 
         public DateTime? LastLogin { get; set; }
+        public string AuthProvider {  get; set; }
+        public string? GoogleId {  get; set; }
+        public string? AvatarUrl { get; set; }
     }
 
 
