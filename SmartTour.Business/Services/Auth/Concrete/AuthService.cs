@@ -16,12 +16,14 @@ namespace SmartTour.Business.Services.Auth.Concrete
     {
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
         // ================= CONSTRUCTOR =================
-        public AuthService(IUserRepository userRepository,IConfiguration configuration)
+        public AuthService(IUserRepository userRepository, IConfiguration configuration, IEmailService emailService)
         {
             _userRepository = userRepository;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         // ================= REGISTER =================
@@ -39,6 +41,7 @@ namespace SmartTour.Business.Services.Auth.Concrete
                 Email = dto.Email,
                 Phone = dto.Phone,
                 PasswordHash = passwordHash,
+                AuthProvider = AuthProviderType.Local.ToString()
             };
 
             await _userRepository.AddAsync(user);
@@ -149,7 +152,7 @@ namespace SmartTour.Business.Services.Auth.Concrete
                     FullName = dto.FullName,
                     GoogleId = dto.GoogleId,
                     AvatarUrl = dto.AvatarUrl,
-                    AuthProvider = AuthProvider.Google.ToString(),
+                    AuthProvider = AuthProviderType.Google.ToString(),
                     LastLogin = DateTime.UtcNow
                 };
 
@@ -158,10 +161,10 @@ namespace SmartTour.Business.Services.Auth.Concrete
             }
             else
             {
-                if (user.AuthProvider == AuthProvider.Local.ToString())
+                if (user.AuthProvider == AuthProviderType.Local.ToString())
                 {
                     user.GoogleId = dto.GoogleId;
-                    user.AuthProvider = AuthProvider.Google.ToString();
+                    user.AuthProvider = AuthProviderType.Google.ToString();
                 }
 
                 user.LastLogin = DateTime.UtcNow;
@@ -173,6 +176,64 @@ namespace SmartTour.Business.Services.Auth.Concrete
 
             return (LoginStatus.Success, token, user.Id, expireMinutes * 60);
         }
+        //#########################CHANGE PASSWORD########################
+
+        public async Task<bool> ForgotPasswordAsync(string email)
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+            if (user == null) return false;
+
+            user.PasswordResetToken = Guid.NewGuid().ToString();
+            user.PasswordResetTokenExpiry = DateTime.UtcNow.AddMinutes(30);
+
+            await _userRepository.SaveChangesAsync();
+
+            var resetLink =
+                $"https://frontend-url/reset-password?token={user.PasswordResetToken}";
+
+            var body = $@"
+        <h2>Password Reset</h2>
+        <p>Click the link below to reset your password:</p>
+        <a href='{resetLink}'>Reset Password</a>
+        <p>This link will expire in 30 minutes.</p>
+    ";
+
+            await _emailService.SendAsync(
+                user.Email,
+                "Reset your password",
+                body
+            );
+
+            return true;
+        }
+
+
+        public async Task<bool> ResetPasswordAsync(string token, string newPassword)
+        {
+            var user = await _userRepository.GetByResetTokenAsync(token);
+            if (user == null) return false;
+            if (user.PasswordResetTokenExpiry < DateTime.UtcNow) return false;
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            user.PasswordResetToken = null;
+            user.PasswordResetTokenExpiry = null;
+
+            await _userRepository.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) return false;
+            if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.PasswordHash)) return false;
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            await _userRepository.SaveChangesAsync();
+            return true;
+        }
+
+
+
 
     }
 }

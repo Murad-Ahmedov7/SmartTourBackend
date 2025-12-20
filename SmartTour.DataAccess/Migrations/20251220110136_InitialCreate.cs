@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SmartTour.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class InitalCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,7 +27,9 @@ namespace SmartTour.DataAccess.Migrations
                     LastLogin = table.Column<DateTime>(type: "datetime2", nullable: true),
                     AuthProvider = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     GoogleId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AvatarUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    AvatarUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PasswordResetToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PasswordResetTokenExpiry = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
