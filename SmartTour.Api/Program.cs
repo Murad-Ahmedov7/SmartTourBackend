@@ -61,6 +61,13 @@ builder.Services
         };
     });
 
+builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+{
+    builder.WithOrigins("http://localhost:5173", "http://localhost:5174", "http://localhost:5175")
+           .AllowAnyHeader()
+           .AllowAnyMethod()
+           .AllowCredentials();
+}));
 
 var app = builder.Build();
 
