@@ -22,7 +22,7 @@ namespace SmartTour.Entities.Users
         public DateTime CreatedAt { get; private set; }=DateTime.UtcNow;
 
         public DateTime? LastLogin { get; set; }
-        public string AuthProvider {  get; set; }
+        public string AuthProvider { get; set; } = "Local"; //bunu niye Local yazdiq arasdir.
         public string? GoogleId {  get; set; }
         public string? AvatarUrl { get; set; }
     }
