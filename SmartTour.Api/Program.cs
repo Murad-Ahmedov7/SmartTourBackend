@@ -32,6 +32,8 @@ builder.Services.AddDbContext<AppDataContext>(options =>
 builder.Services.AddScoped<IUserRepository,UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IGoogleService, GoogleAuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 
 

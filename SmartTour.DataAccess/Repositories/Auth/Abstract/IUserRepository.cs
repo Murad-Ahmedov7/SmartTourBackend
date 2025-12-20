@@ -18,5 +18,8 @@ namespace SmartTour.DataAccess.Repositories.Auth.Abstract
 
         // COMMON
         Task SaveChangesAsync();
+        //GOT TOKEN
+        Task<User> GetByResetTokenAsync(string token);
+        Task<User?> GetByIdAsync(Guid id);
     }
 }

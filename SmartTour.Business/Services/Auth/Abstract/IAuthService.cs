@@ -17,5 +17,13 @@ namespace SmartTour.Business.Services.Auth.Abstract
 
         Task<(LoginStatus status,string? token, Guid? userId, int? expiresIn)>
             GoogleLoginAsync(GoogleUserDto dto);
+
+        //new:
+        Task<bool> ForgotPasswordAsync(string email);
+        Task<bool> ResetPasswordAsync(string token, string newPassword);
+        Task<bool> ChangePasswordAsync(Guid userId,string currentPassword,string newPassword);
     }
+
+
+
 }

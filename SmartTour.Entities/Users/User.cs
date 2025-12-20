@@ -25,6 +25,9 @@ namespace SmartTour.Entities.Users
         public string AuthProvider { get; set; } = "Local"; //bunu niye Local yazdiq arasdir.
         public string? GoogleId {  get; set; }
         public string? AvatarUrl { get; set; }
+        //new:
+        public string? PasswordResetToken { get; set; }
+        public DateTime? PasswordResetTokenExpiry { get; set; }
     }
 
 

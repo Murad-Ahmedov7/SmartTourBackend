@@ -32,6 +32,18 @@ namespace SmartTour.DataAccess.Repositories.Auth.Concrete
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
+        public async Task<User?> GetByIdAsync(Guid id)
+        {
+            return await _context.Users.FirstOrDefaultAsync(e => e.Id == id);
+        }
+
+
+        //new:
+        public async Task<User> GetByResetTokenAsync(string token)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u=> u.PasswordResetToken== token);
+        }
+
         //// LOGIN (failed attempts, lockout, last login)
         //public Task UpdateAsync(User user)
         //{

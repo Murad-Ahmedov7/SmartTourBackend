@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartTour.Business.Enums
 {
-    public enum AuthProvider
+    public enum AuthProviderType
     {
         Local=1,
         Google=2

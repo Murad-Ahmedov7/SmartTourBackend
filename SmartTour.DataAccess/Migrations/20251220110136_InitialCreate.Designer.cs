@@ -12,8 +12,8 @@ using SmartTour.DataAccess;
 namespace SmartTour.DataAccess.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    [Migration("20251216112230_InitalCreate")]
-    partial class InitalCreate
+    [Migration("20251220110136_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,6 +66,12 @@ namespace SmartTour.DataAccess.Migrations
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpiry")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
