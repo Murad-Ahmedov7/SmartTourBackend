@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace SmartTour.Business.Enums
 {
-    public enum AuthProviderType
+    public enum   ResetPasswordStatus
     {
-        Local=1,
-        Google=2
+        Success,
+        InvalidToken,
+        TokenExpired,
+        PasswordInvalid
     }
 }

@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SmartTour.Business.DTOs.Auth;
-using SmartTour.Business.DTOs.GogleDto;
+using SmartTour.Business.DTOs.Auth.PassswordChangeDtos;
+
 using SmartTour.Business.Enums;
+using SmartTour.Business.ExternalAuth;
 using SmartTour.Business.Services.Auth.Abstract;
 using SmartTour.DataAccess.Repositories.Auth.Abstract;
 using SmartTour.Entities.Users;
@@ -41,7 +43,7 @@ namespace SmartTour.Business.Services.Auth.Concrete
                 Email = dto.Email,
                 Phone = dto.Phone,
                 PasswordHash = passwordHash,
-                AuthProvider = AuthProviderType.Local.ToString()
+                AuthProvider = AuthProviderType.Local
             };
 
             await _userRepository.AddAsync(user);
@@ -139,98 +141,132 @@ namespace SmartTour.Business.Services.Auth.Concrete
 
         //#####################GOOGLE LOGIN ##############################
 
-        public async Task<(LoginStatus status, string? token, Guid? userId, int? expiresIn)>
-    GoogleLoginAsync(GoogleUserDto dto)
+        public async Task<(string token, Guid userId, int expiresIn)> LoginWithGoogleAsync(GoogleUserInfo info)
         {
-            var user = await _userRepository.GetByEmailAsync(dto.Email);
+            var user = await _userRepository.GetByGoogleIdAsync(info.GoogleId);
 
             if (user == null)
             {
                 user = new User
                 {
-                    Email = dto.Email,
-                    FullName = dto.FullName,
-                    GoogleId = dto.GoogleId,
-                    AvatarUrl = dto.AvatarUrl,
-                    AuthProvider = AuthProviderType.Google.ToString(),
-                    LastLogin = DateTime.UtcNow
+                    FullName = info.FullName,
+                    Email = info.Email,
+                    GoogleId = info.GoogleId,
+                    AvatarUrl = info.AvatarUrl,
+                    AuthProvider = AuthProviderType.Google
                 };
 
                 await _userRepository.AddAsync(user);
-                await _userRepository.SaveChangesAsync();
-            }
-            else
-            {
-                if (user.AuthProvider == AuthProviderType.Local.ToString())
-                {
-                    user.GoogleId = dto.GoogleId;
-                    user.AuthProvider = AuthProviderType.Google.ToString();
-                }
-
-                user.LastLogin = DateTime.UtcNow;
                 await _userRepository.SaveChangesAsync();
             }
 
             var token = GenerateJwtToken(user);
             var expireMinutes = int.Parse(_configuration["Jwt:ExpireMinutes"]!);
 
-            return (LoginStatus.Success, token, user.Id, expireMinutes * 60);
+            return (token, user.Id, expireMinutes * 60);
         }
-        //#########################CHANGE PASSWORD########################
 
-        public async Task<bool> ForgotPasswordAsync(string email)
+
+
+
+
+
+
+        public async Task ForgotPasswordAsync(string email)
         {
             var user = await _userRepository.GetByEmailAsync(email);
-            if (user == null) return false;
+            if (user == null) return;
 
             user.PasswordResetToken = Guid.NewGuid().ToString();
-            user.PasswordResetTokenExpiry = DateTime.UtcNow.AddMinutes(30);
+            user.PasswordResetTokenExpiry = DateTime.UtcNow.AddMinutes(10);
 
             await _userRepository.SaveChangesAsync();
 
-            var resetLink =
-                $"https://frontend-url/reset-password?token={user.PasswordResetToken}";
 
+            var frontendBaseUrl = _configuration["Frontend:BaseUrl"];
+            var resetLink = $"http://localhost:5173/reset-password?token={user.PasswordResetToken}";
+
+            Console.WriteLine($"RESET LINK: {resetLink}");
             var body = $@"
-        <h2>Password Reset</h2>
-        <p>Click the link below to reset your password:</p>
-        <a href='{resetLink}'>Reset Password</a>
-        <p>This link will expire in 30 minutes.</p>
-    ";
+            <h2>Password Reset</h2>
+            <p>We received a request to reset your password.</p>
+            <p>
+                <a href='{resetLink}'>Reset Password</a>
+            </p>
+            <p>This link will expire in 10 minutes.</p>
+            <p>If you did not request this, you can ignore this email.</p>
+            ";
 
-            await _emailService.SendAsync(
-                user.Email,
-                "Reset your password",
-                body
-            );
-
-            return true;
+            try
+            {
+                await _emailService.SendAsync(user.Email, "Reset password", body);
+            }
+            catch (Exception ex)
+            {
+                // LOG yaz
+                Console.WriteLine(ex.Message);
+                // BURADA STOP. Exception yuxarı atılmır
+            }
         }
 
-
-        public async Task<bool> ResetPasswordAsync(string token, string newPassword)
+        public async Task<ResetPasswordStatus> ResetPasswordAsync(string token, string newPassword)
         {
-            var user = await _userRepository.GetByResetTokenAsync(token);
-            if (user == null) return false;
-            if (user.PasswordResetTokenExpiry < DateTime.UtcNow) return false;
+            var user = await _userRepository.FindByResetTokenAsync(token);
+
+            if (user == null) return ResetPasswordStatus.InvalidToken;
+
+            if (user.PasswordResetTokenExpiry == null || user.PasswordResetTokenExpiry < DateTime.UtcNow)
+            {
+                user.PasswordResetToken = null;
+                user.PasswordResetTokenExpiry = null;
+
+                await _userRepository.SaveChangesAsync();
+
+                return ResetPasswordStatus.TokenExpired;
+            }
+            if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 8)
+                return ResetPasswordStatus.PasswordInvalid;
+
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
             user.PasswordResetToken = null;
             user.PasswordResetTokenExpiry = null;
-
             await _userRepository.SaveChangesAsync();
-            return true;
+
+
+            return ResetPasswordStatus.Success;
+
         }
 
-        public async Task<bool> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword)
+        public async Task<ChangePasswordStatus> ChangePasswordAsync(Guid userId, ChangePasswordRequestDto dto)
         {
             var user = await _userRepository.GetByIdAsync(userId);
-            if (user == null) return false;
-            if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.PasswordHash)) return false;
 
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            if (user == null) return ChangePasswordStatus.UserNotFound;
+
+            var isValid = BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash);
+
+            if (!isValid) return ChangePasswordStatus.WrongPassword;    
+
+            var isSame = BCrypt.Net.BCrypt.Verify(dto.NewPassword, user.PasswordHash);
+
+            if (isSame) return ChangePasswordStatus.PasswordUnchanged;
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+
             await _userRepository.SaveChangesAsync();
-            return true;
+
+
+            //if (user.AuthProvider == AuthProvider.Google)
+            //    return ChangePasswordStatus.GoogleAccount; Google Accounta gore olan halini sonra duzgun yaz.
+
+            return ChangePasswordStatus.Success;
         }
+
+
+
+
+
 
 
 
