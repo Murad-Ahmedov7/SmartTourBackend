@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace SmartTour.Business.DTOs.Auth.PassswordChangeDtos
 {
-    public class ChangePasswordReguestDto
+    public class ForgotPasswortRequestDto
     {
-        public string CurrentPassword { get; set; } = null!;
-        public string NewPassword { get; set; } = null!;
+        public string Email { get; set; } = null!;
     }
 }

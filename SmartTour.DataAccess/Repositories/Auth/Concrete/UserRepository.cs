@@ -39,9 +39,16 @@ namespace SmartTour.DataAccess.Repositories.Auth.Concrete
 
 
         //new:
-        public async Task<User> GetByResetTokenAsync(string token)
+        public async Task<User> FindByResetTokenAsync(string token)
         {
             return await _context.Users.FirstOrDefaultAsync(u=> u.PasswordResetToken== token);
+        }
+
+
+        public async Task<User?> GetByGoogleIdAsync(string googleId)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.GoogleId == googleId);
         }
 
         //// LOGIN (failed attempts, lockout, last login)

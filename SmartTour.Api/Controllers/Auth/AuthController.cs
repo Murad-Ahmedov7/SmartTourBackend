@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using SmartTour.Business.DTOs.Auth;
 using SmartTour.Business.DTOs.Auth.PassswordChangeDtos;
 using SmartTour.Business.Enums;
+using SmartTour.Business.ExternalAuth;
 using SmartTour.Business.Services.Auth.Abstract;
 using SmartTour.Business.Services.Auth.Concrete;
 using System.Security.Claims;
@@ -17,12 +19,12 @@ namespace SmartTour.Api.Controllers.Auth
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly IGoogleService _googleAuthService;
 
-        public AuthController(IAuthService authService, IGoogleService googleAuthService)
+
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
-            _googleAuthService = googleAuthService;
+       
         }
 
         [HttpPost("register")]
@@ -55,55 +57,103 @@ namespace SmartTour.Api.Controllers.Auth
         }
 
 
-        //#############################################
-        [HttpGet("google/callback")]
-        public async Task<IActionResult> GoogleCallBack(string code)
+
+        [AllowAnonymous]
+        [HttpGet("google-login")]
+        public IActionResult GoogleLogin()
         {
-            // 1️⃣ Google-dan user al
-            var googleUser = await _googleAuthService.GetUserAsync(code);
-
-            // 2️⃣ AuthService-ə ötür
-            var result = await _authService.GoogleLoginAsync(googleUser);
-
-            return Ok(new
+            var properties = new AuthenticationProperties
             {
-                result.token,
-                result.userId,
-                result.expiresIn
-            });
+                RedirectUri = "/api/auth/google-success"
+            };
+
+            return Challenge(properties, "Google");
         }
+
+
+        [AllowAnonymous]
+        [HttpGet("google-success")]
+        public async Task<IActionResult> GoogleSuccess()
+        {
+            var result = await HttpContext.AuthenticateAsync("Cookies");
+
+            if (!result.Succeeded)
+                return Unauthorized();
+
+            var claims = result.Principal!.Claims;
+
+            var googleUser = new GoogleUserInfo
+            {
+                GoogleId = claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value,
+                Email = claims.First(x => x.Type == ClaimTypes.Email).Value,
+                FullName = claims.First(x => x.Type == ClaimTypes.Name).Value,
+                AvatarUrl = claims.FirstOrDefault(x => x.Type == "picture")?.Value
+            };
+
+            var (token, userId, expiresIn) =
+                await _authService.LoginWithGoogleAsync(googleUser);
+
+            return Ok(new { token, userId, expiresIn });
+        }
+
+
+
+
 
         //New:
 
         [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswortReguestDto dto)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswortRequestDto dto)
         {
-            var result = await _authService.ForgotPasswordAsync(dto.Email);
+            await _authService.ForgotPasswordAsync(dto.Email);
+
             return Ok();
         }
 
         [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword(PasswordResetRegusestDto dto)
+        public async Task<IActionResult> ResetPassword(PasswordResetRequestDto dto)
         {
             var result = await _authService.ResetPasswordAsync(dto.Token, dto.NewPassword);
 
-            if(!result) return BadRequest();
 
-            return Ok();
+            if (result == ResetPasswordStatus.InvalidToken) return BadRequest("Invalid reset token");
+
+            if (result == ResetPasswordStatus.TokenExpired) return BadRequest("Reset token expired");
+
+            if (result == ResetPasswordStatus.PasswordInvalid) return BadRequest("Password is invalid");
+
+            if (result == ResetPasswordStatus.Success)  return Ok("Password reset successfully");
+
+            return StatusCode(500, "Unexpected error");
+
+          
         }
 
         [Authorize]
         [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword(ChangePasswordReguestDto dto)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto dto)
         {
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var result = await _authService.ChangePasswordAsync(
-                userId,
-                dto.CurrentPassword,
-                dto.NewPassword
-                );
-            if (!result) return BadRequest("Current password is incorrect");
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+            if(!Guid.TryParse(userIdString,out var userId)) return Unauthorized();
+
+            var result = await _authService.ChangePasswordAsync(userId, dto);
+
+            if (result == ChangePasswordStatus.UserNotFound) return NotFound();
+
+            if (result == ChangePasswordStatus.WrongPassword) return BadRequest("Current password is incorrect");
+
+            if (result == ChangePasswordStatus.PasswordUnchanged) return BadRequest("New password must be different from the old password");
+
+            //if (result == ChangePasswordStatus.GoogleAccount)
+            //    return BadRequest("Password cannot be changed for Google accounts");
+
+            if (result != ChangePasswordStatus.Success) return StatusCode(500, "Unexpected error occurred");
+
             return Ok();
+
+
         }
 
 

@@ -1,7 +1,8 @@
 ﻿
 using SmartTour.Business.DTOs.Auth;
-using SmartTour.Business.DTOs.GogleDto;
+using SmartTour.Business.DTOs.Auth.PassswordChangeDtos;
 using SmartTour.Business.Enums;
+using SmartTour.Business.ExternalAuth;
 using SmartTour.Entities.Users;
 
 namespace SmartTour.Business.Services.Auth.Abstract
@@ -11,17 +12,18 @@ namespace SmartTour.Business.Services.Auth.Abstract
         Task<bool> RegisterAsync(RegisterRequestDto dto);
 
         // Login → token + user info
-        Task<(LoginStatus status,string? token,  Guid? userId, int? expiresIn)> LoginAsync(LoginRequestDto dto);
+        Task<(LoginStatus status, string? token, Guid? userId, int? expiresIn)> LoginAsync(LoginRequestDto dto);
 
-//###################################################
 
-        Task<(LoginStatus status,string? token, Guid? userId, int? expiresIn)>
-            GoogleLoginAsync(GoogleUserDto dto);
 
-        //new:
-        Task<bool> ForgotPasswordAsync(string email);
-        Task<bool> ResetPasswordAsync(string token, string newPassword);
-        Task<bool> ChangePasswordAsync(Guid userId,string currentPassword,string newPassword);
+        Task<(string token, Guid userId, int expiresIn)> LoginWithGoogleAsync(GoogleUserInfo info);
+
+
+        Task ForgotPasswordAsync(string email);
+        Task<ResetPasswordStatus> ResetPasswordAsync(string token, string newPassword);
+        Task<ChangePasswordStatus> ChangePasswordAsync(Guid userId,ChangePasswordRequestDto dto);
+
+
     }
 
 

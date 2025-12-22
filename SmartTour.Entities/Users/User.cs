@@ -1,6 +1,8 @@
-﻿
+﻿using SmartTour.Business.Enums;
+
 namespace SmartTour.Entities.Users
 {
+
     public class User
     {
         public Guid Id { get; private set; }
@@ -22,7 +24,7 @@ namespace SmartTour.Entities.Users
         public DateTime CreatedAt { get; private set; }=DateTime.UtcNow;
 
         public DateTime? LastLogin { get; set; }
-        public string AuthProvider { get; set; } = "Local"; //bunu niye Local yazdiq arasdir.
+        public AuthProviderType AuthProvider { get; set; }
         public string? GoogleId {  get; set; }
         public string? AvatarUrl { get; set; }
         //new:

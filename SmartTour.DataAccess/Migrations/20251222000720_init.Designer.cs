@@ -12,8 +12,8 @@ using SmartTour.DataAccess;
 namespace SmartTour.DataAccess.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    [Migration("20251220110136_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251222000720_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,9 +31,8 @@ namespace SmartTour.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AuthProvider")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("AuthProvider")
+                        .HasColumnType("int");
 
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("nvarchar(max)");
