@@ -17,7 +17,7 @@
 //        Console.WriteLine("EMAIL SERVICE CALLED");
 //        var emailSection = _configuration.GetSection("Email");
 
-//        var smtpClient = new SmtpClient
+//        var smtpClient = new SmtpClient   
 //        {
 //            Host = emailSection["Host"]!,
 //            Port = int.Parse(emailSection["Port"]!),

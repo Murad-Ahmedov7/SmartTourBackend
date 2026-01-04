@@ -54,10 +54,10 @@ builder.Services
     .AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = "Google";
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = "Google"; //google login ucun vacibdir.
         options.DefaultSignInScheme = "Cookies";
-    })
+    })  
     .AddCookie("Cookies", options =>
     {
         options.Cookie.SameSite = SameSiteMode.None;
@@ -92,6 +92,15 @@ builder.Services
         options.CorrelationCookie.Name = ".SmartTour.Google.Correlation";
         options.CorrelationCookie.SameSite = SameSiteMode.None;
         options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+
+        // Hər dəfə account seçilməsi üçün düzgün yol:
+        options.Events.OnRedirectToAuthorizationEndpoint = context =>
+        {
+            var redirectUri = context.RedirectUri;
+            redirectUri += "&prompt=select_account";  // burda əlavə edirik
+            context.Response.Redirect(redirectUri);
+            return Task.CompletedTask;
+        };
     });
 
 builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
