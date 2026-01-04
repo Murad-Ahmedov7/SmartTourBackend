@@ -12,7 +12,7 @@ using SmartTour.DataAccess;
 namespace SmartTour.DataAccess.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    [Migration("20251222000720_init")]
+    [Migration("20251223081532_init")]
     partial class init
     {
         /// <inheritdoc />

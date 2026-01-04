@@ -61,7 +61,16 @@ namespace SmartTour.Api.Controllers.Auth
         [AllowAnonymous]
         [HttpGet("google-login")]
         public IActionResult GoogleLogin()
+
+
         {
+
+            if (User.Identity.IsAuthenticated)
+            {
+                // Artıq login olan istifadəçi, onu Google login səhifəsinə yönləndirmə
+                return BadRequest("You are already logged in.");
+            }
+
             var properties = new AuthenticationProperties
             {
                 RedirectUri = "/api/auth/google-success"
@@ -93,7 +102,8 @@ namespace SmartTour.Api.Controllers.Auth
             var (token, userId, expiresIn) =
                 await _authService.LoginWithGoogleAsync(googleUser);
 
-            return Ok(new { token, userId, expiresIn });
+            //return Ok(new { token, userId, expiresIn });
+            return Redirect("http://localhost:5173/customizeTour");
         }
 
 
@@ -116,15 +126,19 @@ namespace SmartTour.Api.Controllers.Auth
             var result = await _authService.ResetPasswordAsync(dto.Token, dto.NewPassword);
 
 
-            if (result == ResetPasswordStatus.InvalidToken) return BadRequest("Invalid reset token");
+            if (result == ResetPasswordStatus.InvalidToken)
+                return BadRequest(new { message = "Invalid reset token" });
 
-            if (result == ResetPasswordStatus.TokenExpired) return BadRequest("Reset token expired");
+            if (result == ResetPasswordStatus.TokenExpired)
+                return BadRequest(new { message = "Reset token expired" });
 
-            if (result == ResetPasswordStatus.PasswordInvalid) return BadRequest("Password is invalid");
+            if (result == ResetPasswordStatus.PasswordInvalid)
+                return BadRequest(new { message = "Password is invalid" });
 
-            if (result == ResetPasswordStatus.Success)  return Ok("Password reset successfully");
+            if (result == ResetPasswordStatus.Success)
+                return Ok(new { message = "Password reset successfully" });
 
-            return StatusCode(500, "Unexpected error");
+            return StatusCode(500, new { message = "Unexpected error" });
 
           
         }
@@ -151,7 +165,12 @@ namespace SmartTour.Api.Controllers.Auth
 
             if (result != ChangePasswordStatus.Success) return StatusCode(500, "Unexpected error occurred");
 
-            return Ok();
+            return Ok(new
+            {
+                message = "Your password was successfully changed"
+            }
+
+            );
 
 
         }

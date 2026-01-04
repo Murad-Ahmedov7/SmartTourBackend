@@ -178,13 +178,13 @@ namespace SmartTour.Business.Services.Auth.Concrete
             if (user == null) return;
 
             user.PasswordResetToken = Guid.NewGuid().ToString();
-            user.PasswordResetTokenExpiry = DateTime.UtcNow.AddMinutes(10);
+            user.PasswordResetTokenExpiry = DateTime.UtcNow.AddMinutes(50);
 
             await _userRepository.SaveChangesAsync();
 
 
             var frontendBaseUrl = _configuration["Frontend:BaseUrl"];
-            var resetLink = $"http://localhost:5173/reset-password?token={user.PasswordResetToken}";
+            var resetLink = $"http://localhost:5173/auth/login/reset-password?token={user.PasswordResetToken}";
 
             Console.WriteLine($"RESET LINK: {resetLink}");
             var body = $@"
@@ -193,7 +193,7 @@ namespace SmartTour.Business.Services.Auth.Concrete
             <p>
                 <a href='{resetLink}'>Reset Password</a>
             </p>
-            <p>This link will expire in 10 minutes.</p>
+            <p>This link will expire in 50 minutes.</p>
             <p>If you did not request this, you can ignore this email.</p>
             ";
 
