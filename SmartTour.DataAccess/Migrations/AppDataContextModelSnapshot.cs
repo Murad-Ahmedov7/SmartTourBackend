@@ -22,6 +22,67 @@ namespace SmartTour.DataAccess.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("SmartTour.Entities.Tour.Tour", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("AviableFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("AviableTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CredientAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DurationDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GroupType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<double>("Raiting")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Region")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TourType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tours");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            AviableFrom = new DateTime(2026, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AviableTo = new DateTime(2026, 6, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CredientAt = new DateTime(2026, 1, 8, 6, 19, 53, 74, DateTimeKind.Utc).AddTicks(1711),
+                            DurationDays = 4,
+                            GroupType = "Family",
+                            Price = 850m,
+                            Raiting = 4.7000000000000002,
+                            Region = "Sheki",
+                            Title = "Sheki Cultural Escape",
+                            TourType = "Cultural"
+                        });
+                });
+
             modelBuilder.Entity("SmartTour.Entities.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
