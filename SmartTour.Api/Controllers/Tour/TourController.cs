@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartTour.Business.DTOs.Tour;
-using SmartTour.Business.Services.Auth.Abstract;
+using SmartTour.Business.Services.Tour.Abstract;
 
 namespace SmartTour.Api.Controllers
 {
@@ -18,13 +18,20 @@ namespace SmartTour.Api.Controllers
         [HttpPost("customize")]
         public async Task<IActionResult> Customize([FromBody] CustomizeTourRequestDto dto)
         {
+
             var tours = await _tourService.CustomizeAsync(dto);
+
+            if (!tours.Any())
+            {
+                return NotFound(new { message = "No tours found matching the selected filters." });
+            }
 
             return Ok(new
             {
                 success = true,
                 tours
-            });
+            }
+            );
         }
     }
 }
