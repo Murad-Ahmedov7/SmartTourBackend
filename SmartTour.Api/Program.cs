@@ -4,9 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SmartTour.Business.Services.Auth.Abstract;
 using SmartTour.Business.Services.Auth.Concrete;
+using SmartTour.Business.Services.Tour.Abstract;
+using SmartTour.Business.Services.Tour.Concrete;
 using SmartTour.DataAccess;
 using SmartTour.DataAccess.Repositories.Auth.Abstract;
 using SmartTour.DataAccess.Repositories.Auth.Concrete;
+using SmartTour.DataAccess.Repositories.Tour.Abstract;
+using SmartTour.DataAccess.Repositories.Tour.Concrete;
 using System.Text;
 
 

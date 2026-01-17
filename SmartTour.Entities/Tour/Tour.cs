@@ -11,11 +11,11 @@
         public string TourType { get; set; }
         public string GroupType { get; set; }
 
-        public double Raiting { get; set; }
+        public double Rating { get; set; }
 
-        public DateTime AviableFrom { get; set; }
-        public DateTime AviableTo { get; set; }
+        public DateTime AvailableFrom { get; set; }
+        public DateTime AvailableTo { get; set; }
 
-        public DateTime CredientAt { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

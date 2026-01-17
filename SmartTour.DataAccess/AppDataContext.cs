@@ -28,10 +28,10 @@ namespace SmartTour.DataAccess
                     DurationDays = 4,
                     TourType = "Cultural",
                     GroupType = "Family",
-                    Raiting = 4.7,
-                    AviableFrom = new DateTime(2026, 06, 10),
-                    AviableTo = new DateTime(2026, 06, 14),
-                    CredientAt = DateTime.UtcNow
+                    Rating = 4.7,
+                    AvailableFrom = new DateTime(2026, 06, 10),
+                    AvailableTo = new DateTime(2026, 06, 14),
+                    CreatedAt = DateTime.UtcNow
                 },
 
                  new Tour
@@ -43,13 +43,23 @@ namespace SmartTour.DataAccess
                      DurationDays = 2,
                      TourType = "Entertainment",
                      GroupType = "Friends",
-                     Raiting = 4.3,
-                     AviableFrom = new DateTime(2026, 07, 01),
-                     AviableTo = new DateTime(2026, 07, 03),
-                     CredientAt = DateTime.UtcNow
+                     Rating = 4.3,
+                     AvailableFrom = new DateTime(2026, 07, 01),
+                     AvailableTo = new DateTime(2026, 07, 03),
+                     CreatedAt = DateTime.UtcNow
                  }
             );
         }
 
         }
-    }
+
+
+
+    //OnModelCreating migration yaradılarkən EF Core-a deyir ki,
+    //DB hansı cədvəllərdən, sütunlardan, qaydalardan və ilkin datadan ibarət olmalıdır.
+
+
+    // HasData: migration zamanı DB yaradılarkən ilkin (seed) data əlavə edir
+
+
+}

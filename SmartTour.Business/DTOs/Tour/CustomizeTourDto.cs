@@ -17,6 +17,6 @@ namespace SmartTour.Business.DTOs.Tour
 
         public List<string> TourTypes { get; set; } = new();
 
-        public string GroupType { get; set; }
+        public string? GroupType { get; set; }
     }
 }

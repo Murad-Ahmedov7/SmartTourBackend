@@ -28,13 +28,13 @@ namespace SmartTour.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("AviableFrom")
+                    b.Property<DateTime>("AvailableFrom")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("AviableTo")
+                    b.Property<DateTime>("AvailableTo")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CredientAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("DurationDays")
@@ -47,7 +47,7 @@ namespace SmartTour.DataAccess.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("Raiting")
+                    b.Property<double>("Rating")
                         .HasColumnType("float");
 
                     b.Property<string>("Region")
@@ -70,16 +70,30 @@ namespace SmartTour.DataAccess.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            AviableFrom = new DateTime(2026, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            AviableTo = new DateTime(2026, 6, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CredientAt = new DateTime(2026, 1, 8, 6, 19, 53, 74, DateTimeKind.Utc).AddTicks(1711),
+                            AvailableFrom = new DateTime(2026, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AvailableTo = new DateTime(2026, 6, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2026, 1, 17, 18, 57, 15, 974, DateTimeKind.Utc).AddTicks(8048),
                             DurationDays = 4,
                             GroupType = "Family",
                             Price = 850m,
-                            Raiting = 4.7000000000000002,
+                            Rating = 4.7000000000000002,
                             Region = "Sheki",
                             Title = "Sheki Cultural Escape",
                             TourType = "Cultural"
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            AvailableFrom = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AvailableTo = new DateTime(2026, 7, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2026, 1, 17, 18, 57, 15, 974, DateTimeKind.Utc).AddTicks(8052),
+                            DurationDays = 2,
+                            GroupType = "Friends",
+                            Price = 450m,
+                            Rating = 4.2999999999999998,
+                            Region = "Baku",
+                            Title = "Baku Nightlife Adventure",
+                            TourType = "Entertainment"
                         });
                 });
 
