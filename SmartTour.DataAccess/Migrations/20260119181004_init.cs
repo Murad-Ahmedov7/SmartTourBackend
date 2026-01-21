@@ -64,8 +64,8 @@ namespace SmartTour.DataAccess.Migrations
                 columns: new[] { "Id", "AvailableFrom", "AvailableTo", "CreatedAt", "DurationDays", "GroupType", "Price", "Rating", "Region", "Title", "TourType" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2026, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 6, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 1, 17, 18, 57, 15, 974, DateTimeKind.Utc).AddTicks(8048), 4, "Family", 850m, 4.7000000000000002, "Sheki", "Sheki Cultural Escape", "Cultural" },
-                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 7, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 1, 17, 18, 57, 15, 974, DateTimeKind.Utc).AddTicks(8052), 2, "Friends", 450m, 4.2999999999999998, "Baku", "Baku Nightlife Adventure", "Entertainment" }
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new DateTime(2026, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 6, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 1, 19, 18, 10, 4, 237, DateTimeKind.Utc).AddTicks(4999), 4, "Family", 850m, 4.7000000000000002, "Sheki", "Sheki Cultural Escape", "Historical" },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 7, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 1, 19, 18, 10, 4, 237, DateTimeKind.Utc).AddTicks(5003), 2, "Friends", 450m, 4.2999999999999998, "Baku", "Baku Nightlife Adventure", "Horse riding" }
                 });
         }
 
