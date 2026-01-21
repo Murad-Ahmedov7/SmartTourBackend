@@ -67,7 +67,7 @@ namespace SmartTour.Business.Services.Tour.Concrete
                     Title = t.Title,
                     Price = t.Price,
                     DurationDays = t.DurationDays,
-                    Rating = 0
+                    Rating = t.Rating
                 })
 
                 // ToListAsync çağırıldığı anda:
