@@ -1,9 +1,5 @@
 ﻿using SmartTour.Entities.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace SmartTour.DataAccess.Repositories.Auth.Abstract
 {

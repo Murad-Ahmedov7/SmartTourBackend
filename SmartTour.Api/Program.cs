@@ -30,11 +30,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-var conn = builder.Configuration.GetConnectionString("Default");
-builder.Services.AddDbContext<AppDataContext>(options =>
-{
-    options.UseSqlServer(conn);
-});
+    var conn = builder.Configuration.GetConnectionString("Default");
+    builder.Services.AddDbContext<AppDataContext>(options =>
+    {
+        options.UseSqlServer(conn);
+    });
 
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
@@ -142,3 +142,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
+

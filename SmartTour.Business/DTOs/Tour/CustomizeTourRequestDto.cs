@@ -18,5 +18,10 @@ namespace SmartTour.Business.DTOs.Tour
         public List<string> TourTypes { get; set; } = new();
 
         public string? GroupType { get; set; }
+
+
+        public string? SortBy { get; set; }
+        public int Page { get; set; } = 1;
+        public int Limit { get; set; } = 10;
     }
 }

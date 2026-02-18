@@ -16,6 +16,10 @@
         public DateTime AvailableFrom { get; set; }
         public DateTime AvailableTo { get; set; }
 
+
+        public string Image { get; set; }          // ✔ single image
+        public string Description { get; set; }    // ✔ full description
+
         public DateTime CreatedAt { get; set; }
     }
 }

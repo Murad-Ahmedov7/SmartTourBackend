@@ -18,20 +18,20 @@ namespace SmartTour.Api.Controllers
         [HttpPost("customize")]
         public async Task<IActionResult> Customize([FromBody] CustomizeTourRequestDto dto)
         {
+            var result = await _tourService.CustomizeAsync(dto);
 
-            var tours = await _tourService.CustomizeAsync(dto);
-
-            if (!tours.Any())
+            // List boşdursa
+            if (!result.Tours.Any())
             {
-                return NotFound(new { message = "No tours found matching the selected filters." });
+                return NotFound(new
+                {
+                    message = "No tours found matching the selected filters."
+                });
             }
 
-            return Ok(new
-            {
-                success = true,
-                tours
-            }
-            );
+            // Birbaşa service response-u qaytar
+            return Ok(result);
         }
+
     }
 }
