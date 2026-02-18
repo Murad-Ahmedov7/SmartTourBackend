@@ -53,9 +53,8 @@ namespace SmartTour.Business.Services.Auth.Concrete
         }
 
         // ================= LOGIN =================
-        public async Task<(LoginStatus status, string? token, Guid? userId, int? expiresIn)>
-            LoginAsync(LoginRequestDto dto)
-        {
+        public async Task<(LoginStatus status, string? token, Guid? userId, int? expiresIn)> LoginAsync(LoginRequestDto dto)
+        {   
             var user = await _userRepository.GetByEmailAsync(dto.Email);
             if (user == null)
                 return (LoginStatus.InvalidCredentials, null, null, null);
@@ -97,7 +96,7 @@ namespace SmartTour.Business.Services.Auth.Concrete
         }
 
 
-        // ================= JWT GENERATION =================
+        // ================= JWT GENERATION =================   
         private string GenerateJwtToken(User user)
         {
             var jwtSection = _configuration.GetSection("Jwt");

@@ -5,6 +5,6 @@ namespace SmartTour.Business.Services.Tour.Abstract
 {
     public interface ITourService
     {
-        Task<List<TourResponseDto>> CustomizeAsync(CustomizeTourRequestDto dto);
+        Task<TourListResponseDto> CustomizeAsync(CustomizeTourRequestDto dto);
     }
 }
