@@ -1,10 +1,12 @@
 ﻿
-using SmartTour.Business.DTOs.Tour;
+using SmartTour.Business.DTOs.Tour.Requests;
+using SmartTour.Business.DTOs.Tour.Responses;
 
-namespace SmartTour.Business.Services.Tour.Abstract
+namespace SmartTour.Business.Services.Tour.Abstract;
+
+public interface ITourService
 {
-    public interface ITourService
-    {
-        Task<TourListResponseDto> CustomizeAsync(CustomizeTourRequestDto dto);
-    }
+    Task<TourListResponseDto> CustomizeAsync(CustomizeTourRequestDto dto);
+    
+    Task<TourDetailsResponseDto?> GetByIdAsync(Guid id);
 }
